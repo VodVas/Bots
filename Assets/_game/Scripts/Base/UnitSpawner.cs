@@ -13,7 +13,7 @@ public class UnitSpawner : MonoBehaviour
     private float _unitSpeed;
 
     [Inject]
-    public void Construct(UnitRepository unitManager, [Inject(Id = "UnitSpeed")] float unitSpeed)
+    public void Construct(UnitRepository unitManager, float unitSpeed)
     {
         _unitManager = unitManager;
         _unitSpeed = unitSpeed;
@@ -31,14 +31,9 @@ public class UnitSpawner : MonoBehaviour
     {
         GameObject unitObject = Instantiate(_unitPrefab, _unitPositions[index].position, Quaternion.Euler(_unitRotation));
 
-        if (unitObject.TryGetComponent(out AnimationPlayer animationPlayer))
-        {
-            animationPlayer.SetReferencePoint(_referencePoint);
-        }
-
         if (unitObject.TryGetComponent(out Unit unit))
         {
-            UnitController controller = new UnitController(unit, _unitSpeed, _referencePoint.transform.position);
+            UnitNavigator controller = new UnitNavigator(unit, _unitSpeed, _referencePoint.transform.position);
 
             unit.Init(controller);
 

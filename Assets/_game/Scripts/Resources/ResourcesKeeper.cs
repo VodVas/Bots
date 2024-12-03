@@ -8,9 +8,9 @@ public class ResourcesKeeper : MonoBehaviour
     public int WoodCount { get; private set; }
     public int StoneCount { get; private set; }
 
-    public void Add(ResourceType resourceType, int amount)
+    public void Add(ResourceType type, int amount)
     {
-        switch (resourceType)
+        switch (type)
         {
             case ResourceType.Wood:
                 WoodCount += amount;
@@ -19,40 +19,10 @@ public class ResourcesKeeper : MonoBehaviour
 
             case ResourceType.Stone:
                 StoneCount += amount;
+
                 break;
         }
 
         ResourceChange?.Invoke();
     }
-
-    //Для следующей части задания
-    //public bool SpendResource(ResourceType resourceType, int amount)
-    //{
-    //    switch (resourceType)
-    //    {
-    //        case ResourceType.Wood:
-    //            if (WoodCount >= amount)
-    //            {
-    //                WoodCount -= amount;
-    //                ResourceChange?.Invoke();
-
-    //                return true;
-    //            }
-
-    //            break;
-
-    //        case ResourceType.Stone:
-    //            if (StoneCount >= amount)
-    //            {
-    //                StoneCount -= amount;
-    //                ResourceChange?.Invoke();
-
-    //                return true;
-    //            }
-
-    //            break;
-    //    }
-
-    //    return false;
-    //}
 }

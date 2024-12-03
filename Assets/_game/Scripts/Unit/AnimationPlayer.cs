@@ -4,12 +4,13 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class AnimationPlayer : MonoBehaviour
 {
-    private const string isMoving = "isMoving";
+    private const string IsMoving = "isMoving";
 
     [SerializeField] private float _delay = 0.2f;
+    [SerializeField] private float _distanceThreshold = 0.0001f;
 
-    private Transform _referencePoint;
     private Animator _animator;
+    private Vector3 _previousPosition;
 
     private void Awake()
     {
@@ -18,34 +19,31 @@ public class AnimationPlayer : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(CheckingDistance());
+        _previousPosition = transform.position;
+
+        StartCoroutine(CheckingMovement());
     }
 
-    public void SetReferencePoint(Transform referencePoint)
-    {
-        _referencePoint = referencePoint;
-    }
-
-    private IEnumerator CheckingDistance()
+    private IEnumerator CheckingMovement()
     {
         var wait = new WaitForSeconds(_delay);
 
         while (true)
         {
-            float distanceMoved1 = Vector3.Distance(transform.position, _referencePoint.transform.position);
-
             yield return wait;
 
-            float distanceMoved2 = Vector3.Distance(transform.position, _referencePoint.transform.position);
+            float sqrDistanceMoved = (transform.position - _previousPosition).sqrMagnitude;
 
-            if (distanceMoved1 == distanceMoved2)
+            if (sqrDistanceMoved > _distanceThreshold)
             {
-                _animator.SetBool(isMoving, false);
+                _animator.SetBool(IsMoving, true);
             }
             else
             {
-                _animator.SetBool(isMoving, true);
+                _animator.SetBool(IsMoving, false);
             }
+
+            _previousPosition = transform.position;
         }
     }
 }

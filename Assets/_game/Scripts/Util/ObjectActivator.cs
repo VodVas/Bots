@@ -2,8 +2,7 @@ using UnityEngine;
 
 public class ObjectActivator : MonoBehaviour
 {
-    Transform _parentTransform;
-
+    private Transform _parentTransform;
     private int _currentIndex = 0;
 
     private void Awake()
@@ -13,8 +12,6 @@ public class ObjectActivator : MonoBehaviour
 
     public void ActivateNextObject()
     {
-        _parentTransform = transform;
-
         int childCount = _parentTransform.childCount;
 
         if (_currentIndex < childCount)

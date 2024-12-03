@@ -4,11 +4,11 @@ public class Picker : MonoBehaviour
 {
     [SerializeField] private Transform _holdPoint;
 
-    private UnitController _unitController;
+    private UnitNavigator _unitController;
 
     public PickingObject CurrentObject { get; private set; }
 
-    public void SetUnitController(UnitController unitController)
+    public void SetUnitController(UnitNavigator unitController)
     {
         _unitController = unitController;
     }

@@ -12,7 +12,6 @@ public class UnitControlInstaller : MonoInstaller
             .NonLazy();
 
         Container.Bind<float>()
-            .WithId("UnitSpeed")
             .FromInstance(_unitSpeed)
             .AsSingle();
     }

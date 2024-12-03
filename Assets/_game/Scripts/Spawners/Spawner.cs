@@ -12,7 +12,17 @@ public class Spawner<T> where T : MonoBehaviour, IDeathEvent
         _objectPrefab = objectPrefab;
         _positionProvider = positionProvider;
 
-        _objectPool = new ObjectPool<T>(CreateObject, OnGetFromPool, OnReleaseToPool, OnDestroyPoolObject, true, 10, 11);
+        _objectPool = new ObjectPool<T>(CreateObject, OnGetFromPool, OnReleaseToPool, OnDestroyPoolObject, true, 10, 15);
+    }
+
+    public void ClearPool()
+    {
+        _objectPool.Clear();
+    }
+
+    public void SpawnObject()
+    {
+        _objectPool.Get();
     }
 
     private T CreateObject()
@@ -50,15 +60,5 @@ public class Spawner<T> where T : MonoBehaviour, IDeathEvent
         {
             Object.Destroy(obj.gameObject);
         }
-    }
-
-    public void ClearPool()
-    {
-        _objectPool.Clear();
-    }
-
-    public void SpawnObject()
-    {
-        _objectPool.Get();
     }
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    private UnitController _controller;
+    private UnitNavigator _controller;
     private Picker _picker;
 
     private void Awake()
@@ -10,7 +10,7 @@ public class Unit : MonoBehaviour
         _picker = GetComponent<Picker>();
     }
 
-    public void Init(UnitController controller)
+    public void Init(UnitNavigator controller)
     {
         _controller = controller;
         _picker.SetUnitController(controller);

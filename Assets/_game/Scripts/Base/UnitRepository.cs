@@ -30,7 +30,7 @@ public class UnitRepository : ITickable
     {
         foreach (var unit in _units)
         {
-            if (unit is UnitController controller)
+            if (unit is UnitNavigator controller)
             {
                 controller.Update();
             }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class RandomPositionProvider : IPositionProvider
 {
-    private readonly Collider _planeCollider;
+    private readonly Collider _spawnAreaCollider;
     private readonly float _spawnHeight;
     private readonly float _offsetX;
     private readonly float _offsetZ;
@@ -12,7 +12,7 @@ public class RandomPositionProvider : IPositionProvider
 
     public RandomPositionProvider(Collider planeCollider, float spawnHeight, float offsetX, float offsetZ, int maxAttempts, float searchRadius)
     {
-        _planeCollider = planeCollider;
+        _spawnAreaCollider = planeCollider;
         _spawnHeight = spawnHeight;
         _offsetX = offsetX;
         _offsetZ = offsetZ;
@@ -30,8 +30,8 @@ public class RandomPositionProvider : IPositionProvider
 
     private Vector3 GetRandomPointOnPlane()
     {
-        float randomX = Random.Range(_planeCollider.bounds.min.x, _planeCollider.bounds.max.x);
-        float randomZ = Random.Range(_planeCollider.bounds.min.z, _planeCollider.bounds.max.z);
+        float randomX = Random.Range(_spawnAreaCollider.bounds.min.x, _spawnAreaCollider.bounds.max.x);
+        float randomZ = Random.Range(_spawnAreaCollider.bounds.min.z, _spawnAreaCollider.bounds.max.z);
 
         return new Vector3(randomX, 0f, randomZ);
     }

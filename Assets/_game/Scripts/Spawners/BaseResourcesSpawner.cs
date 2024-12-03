@@ -5,7 +5,7 @@ public abstract class BaseResourcesSpawner<T> : MonoBehaviour where T : MonoBeha
 {
     [SerializeField] protected float Delay;
 
-    protected Spawner<T> _spawner;
+    protected Spawner<T> Spawner;
 
     protected abstract void Construct(T prefab, IPositionProvider positionProvider);
 
@@ -16,7 +16,7 @@ public abstract class BaseResourcesSpawner<T> : MonoBehaviour where T : MonoBeha
 
     private void OnDisable()
     {
-        _spawner.ClearPool();
+        Spawner.ClearPool();
     }
 
     private IEnumerator DelayAndSpawn()
@@ -25,10 +25,9 @@ public abstract class BaseResourcesSpawner<T> : MonoBehaviour where T : MonoBeha
 
         while (true)
         {
-            _spawner.SpawnObject();
+            Spawner.SpawnObject();
 
             yield return wait;
         }
-
     }
 }

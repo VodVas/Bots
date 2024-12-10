@@ -7,10 +7,6 @@ public class UnitControlInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        Container.BindInterfacesAndSelfTo<UnitRepository>()
-            .AsSingle()
-            .NonLazy();
-
         Container.Bind<float>()
             .FromInstance(_unitSpeed)
             .AsSingle();

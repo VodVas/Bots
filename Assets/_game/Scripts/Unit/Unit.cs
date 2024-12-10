@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Picker))]
 public class Unit : MonoBehaviour
 {
     private UnitMover _unitMover;

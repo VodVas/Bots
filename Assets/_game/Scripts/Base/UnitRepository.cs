@@ -1,9 +1,16 @@
 using System.Collections.Generic;
-using Zenject;
+using UnityEngine;
 
-public class UnitRepository : ITickable
+public class UnitRepository : MonoBehaviour
 {
-    private readonly List<IUnitController> _units = new List<IUnitController>();
+    private List<IUnitController> _units = new List<IUnitController>();
+
+    public int UnitCount => _units.Count;
+
+    private void Update()
+    {
+        UpdateMovers();
+    }
 
     public void RegisterUnit(IUnitController unit)
     {
@@ -11,6 +18,21 @@ public class UnitRepository : ITickable
         {
             _units.Add(unit);
         }
+    }
+
+    public void UnregisterUnit(IUnitController unit)
+    {
+        if (_units.Contains(unit))
+        {
+            _units.Remove(unit);
+        }
+    }
+
+    public void TransferUnitToBase(IUnitController unit, Base newBase)
+    {
+        UnregisterUnit(unit);
+
+        newBase.RegisterUnit(unit);
     }
 
     public IUnitController GetAvailableUnit()
@@ -26,13 +48,13 @@ public class UnitRepository : ITickable
         return null;
     }
 
-    public void Tick()
+    private void UpdateMovers()
     {
-        foreach (var unit in _units)
+        for (int i = _units.Count - 1; i >= 0; i--)
         {
-            if (unit is UnitMover controller)
+            if (_units[i] is UnitMover unitMover)
             {
-                controller.Update();
+                unitMover.Update();
             }
         }
     }

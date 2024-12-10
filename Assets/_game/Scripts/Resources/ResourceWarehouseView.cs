@@ -1,25 +1,32 @@
 using TMPro;
 using UnityEngine;
 
+[RequireComponent(typeof(ResourcesKeeper))]
 public class ResourceWarehouseView : MonoBehaviour
 {
     [SerializeField] private TextMeshPro _woodText;
     [SerializeField] private TextMeshPro _stoneText;
-    [SerializeField] private ResourcesKeeper _resourcesKeeper;
+
+    private ResourcesKeeper _resourcesKeeper;
+
+    private void Awake()
+    {
+        _resourcesKeeper = GetComponent<ResourcesKeeper>();
+    }
 
     private void OnEnable()
     {
-        UpdateResourceText();
+        UpdateText();
 
-        _resourcesKeeper.ResourceChange += UpdateResourceText;
+        _resourcesKeeper.ResourceChange += UpdateText;
     }
 
     private void OnDisable()
     {
-        _resourcesKeeper.ResourceChange -= UpdateResourceText;
+        _resourcesKeeper.ResourceChange -= UpdateText;
     }
 
-    private void UpdateResourceText()
+    private void UpdateText()
     {
         _woodText.text = $"{_resourcesKeeper.WoodCount}";
         _stoneText.text = $" {_resourcesKeeper.StoneCount}";

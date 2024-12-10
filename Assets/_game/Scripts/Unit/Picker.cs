@@ -4,7 +4,7 @@ public class Picker : MonoBehaviour
 {
     [SerializeField] private Transform _holdPoint;
 
-    private UnitMover _unitNavigator;
+    private UnitMover _unitMover;
 
     public PickingObject CurrentObject { get; private set; }
 
@@ -12,7 +12,7 @@ public class Picker : MonoBehaviour
     {
         if (other.TryGetComponent(out PickingObject pickingObject) && pickingObject.IsPickedUp == false)
         {
-            if (pickingObject.TryGetComponent(out IResourceble resourceble) && resourceble == _unitNavigator.TargetResource)
+            if (pickingObject.TryGetComponent(out IResourceble resourceble) && resourceble == _unitMover.TargetResource)
             {
                 CurrentObject = pickingObject;
                 CurrentObject.PickUp(_holdPoint, _holdPoint.transform.position);
@@ -20,9 +20,9 @@ public class Picker : MonoBehaviour
         }
     }
 
-    public void SetUnitController(UnitMover unitController)
+    public void SetUnitController(UnitMover unitMover)
     {
-        _unitNavigator = unitController;
+        _unitMover = unitMover;
     }
 
     public void DropCurrentObject()

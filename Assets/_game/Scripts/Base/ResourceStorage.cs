@@ -2,6 +2,6 @@
 public class ResourceStorage
 {
     public ResourceType Type;
-    public ObjectActivator Activator;
+    public ChildElementVisibilitySwitcher Activator;
     public int Amount;
 }

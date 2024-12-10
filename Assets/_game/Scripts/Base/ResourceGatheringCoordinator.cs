@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
+[RequireComponent(typeof(ParticlePlayer))]
+[RequireComponent(typeof(UnitRepository))]
 public class ResourceGatheringCoordinator : MonoBehaviour
 {
     [SerializeField] private float _scanRadius = 5f;
@@ -10,17 +12,14 @@ public class ResourceGatheringCoordinator : MonoBehaviour
 
     private UnitRepository _unitRepository;
     private ParticlePlayer _particlePlayer;
-    private HashSet<IResourceble> _processedResources = new HashSet<IResourceble>();
 
-    [Inject]
-    public void Construct(UnitRepository unitRepository, ParticlePlayer particlePlayer)
-    {
-        _unitRepository = unitRepository;
-        _particlePlayer = particlePlayer;
-    }
+    [Inject] private ResourceRegistrator _resourceManager;
 
     private void Awake()
     {
+        _particlePlayer = GetComponent<ParticlePlayer>();
+        _unitRepository = GetComponent<UnitRepository>();
+
         StartCoroutine(ResourceAllocating());
     }
 
@@ -46,7 +45,7 @@ public class ResourceGatheringCoordinator : MonoBehaviour
         {
             if (collider.TryGetComponent(out IResourceble resource))
             {
-                if (_processedResources.Contains(resource))
+                if (_resourceManager.IsProcessed(resource))
                 {
                     continue;
                 }
@@ -72,7 +71,7 @@ public class ResourceGatheringCoordinator : MonoBehaviour
 
     private void Remember(IResourceble resource)
     {
-        _processedResources.Add(resource);
+        _resourceManager.AddProcessed(resource);
 
         if (resource is IDeathEvent deathEventResource)
         {
@@ -92,8 +91,11 @@ public class ResourceGatheringCoordinator : MonoBehaviour
 
     private void OnResourceDead(IDeathEvent resource)
     {
-        _processedResources.Remove(resource as IResourceble);
+        if (resource is IResourceble resourceble)
+        {
+            _resourceManager.RemoveProcessed(resourceble);
 
-        resource.Dead -= OnResourceDead;
+            resource.Dead -= OnResourceDead;
+        }
     }
 }

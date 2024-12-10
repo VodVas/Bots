@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using Zenject;
 
 public abstract class BaseResourcesSpawner<T> : MonoBehaviour where T : MonoBehaviour, IDeathEvent
 {
@@ -7,11 +8,11 @@ public abstract class BaseResourcesSpawner<T> : MonoBehaviour where T : MonoBeha
 
     protected Spawner<T> Spawner;
 
-    protected abstract void Construct(T prefab, IPositionProvider positionProvider);
+    protected abstract void Construct(T prefab, IPositionProvider positionProvider, DiContainer container);
 
     private void Start()
     {
-        StartCoroutine(DelayingSpawn());
+        StartCoroutine(DelayingCreate());
     }
 
     private void OnDisable()
@@ -19,7 +20,7 @@ public abstract class BaseResourcesSpawner<T> : MonoBehaviour where T : MonoBeha
         Spawner.ClearPool();
     }
 
-    private IEnumerator DelayingSpawn()
+    private IEnumerator DelayingCreate()
     {
         var wait = new WaitForSeconds(Delay);
 

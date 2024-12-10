@@ -1,14 +1,17 @@
 using UnityEngine;
 using UnityEngine.Pool;
+using Zenject;
 
 public class Spawner<T> where T : MonoBehaviour, IDeathEvent
 {
     private T _objectPrefab;
     private IPositionProvider _positionProvider;
     private ObjectPool<T> _objectPool;
+    private DiContainer _container;
 
-    public Spawner(T objectPrefab, IPositionProvider positionProvider)
+    public Spawner(DiContainer container, T objectPrefab, IPositionProvider positionProvider)
     {
+        _container = container;
         _objectPrefab = objectPrefab;
         _positionProvider = positionProvider;
 
@@ -29,7 +32,7 @@ public class Spawner<T> where T : MonoBehaviour, IDeathEvent
     {
         Vector3 spawnPosition = _positionProvider.GetPosition();
 
-        return Object.Instantiate(_objectPrefab, spawnPosition, Quaternion.identity);
+        return _container.InstantiatePrefabForComponent<T>(_objectPrefab.gameObject, spawnPosition, Quaternion.identity, null);
     }
 
     private void OnGetFromPool(T obj)

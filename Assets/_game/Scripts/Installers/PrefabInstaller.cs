@@ -5,8 +5,7 @@ public class PrefabInstaller : MonoInstaller
 {
     [SerializeField] private Wood _woodPrefab;
     [SerializeField] private Stone _stonePrefab;
-    [SerializeField] private GameObject _unitPrefab;
-    [SerializeField] private Base _basePrefab;
+    [SerializeField] private Unit _unitPrefab;
 
     public override void InstallBindings()
     {
@@ -18,16 +17,8 @@ public class PrefabInstaller : MonoInstaller
             .FromInstance(_stonePrefab)
             .AsSingle();
 
-        Container.Bind<GameObject>()
+        Container.Bind<Unit>()
             .FromInstance(_unitPrefab)
             .AsTransient();
-
-        Container.Bind<Base>()
-            .FromInstance(_basePrefab)
-            .AsSingle();
-
-        Container.Bind<IBaseFactory>()
-            .To<BaseFactory>()
-            .AsSingle();
     }
 }

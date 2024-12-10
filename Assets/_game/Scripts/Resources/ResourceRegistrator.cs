@@ -19,4 +19,9 @@ public class ResourceRegistrator : MonoBehaviour
     {
         _processedResources.Remove(resource);
     }
+
+    public void Clear()
+    {
+        _processedResources.Clear();
+    }
 }

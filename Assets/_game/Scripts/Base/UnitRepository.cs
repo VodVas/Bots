@@ -16,7 +16,7 @@ public class UnitRepository : MonoBehaviour
     {
         if (_units.Contains(unit) == false)
         {
-            _units.Add(unit);
+            _units.Insert(0, unit);
         }
     }
 
@@ -33,6 +33,21 @@ public class UnitRepository : MonoBehaviour
         UnregisterUnit(unit);
 
         newBase.RegisterUnit(unit);
+    }
+
+    public List<IUnitController> GetAvailableUnits()
+    {
+        List<IUnitController> availableUnits = new List<IUnitController>();
+
+        foreach (var unit in _units)
+        {
+            if (unit.IsAvailable)
+            {
+                availableUnits.Add(unit);
+            }
+        }
+
+        return availableUnits;
     }
 
     public IUnitController GetAvailableUnit()

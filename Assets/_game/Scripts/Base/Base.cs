@@ -8,8 +8,10 @@ using Zenject;
 public class Base : MonoBehaviour
 {
     [SerializeField] private List<ResourceStorage> _resourceStorages;
-    [SerializeField] protected int _unitPrice = 3;
-    [SerializeField] private int _newBasePrice = 5;
+    [SerializeField] private int _unitPriceWood = 3;
+    [SerializeField] private int _unitPriceStone = 3;
+    [SerializeField] private int _newBasePriceWood = 5;
+    [SerializeField] private int _newBasePriceStone = 5;
 
     private BaseState _currentState = BaseState.BuildingUnits;
     private ResourcesKeeper _resourcesKeeper;
@@ -73,7 +75,7 @@ public class Base : MonoBehaviour
     {
         if (_currentState == BaseState.WaitingForResources)
         {
-            if (_resourcesKeeper.WoodCount >= _newBasePrice && _resourcesKeeper.StoneCount >= _newBasePrice)
+            if (_resourcesKeeper.WoodCount >= _newBasePriceWood && _resourcesKeeper.StoneCount >= _newBasePriceStone)
             {
                 _currentState = BaseState.SendingUnitToFlag;
 
@@ -84,13 +86,16 @@ public class Base : MonoBehaviour
 
     private void SendUnitToFlag()
     {
-        IUnitController availableUnit = _unitRepository.GetAvailableUnit();
+        var availableUnits = _unitRepository.GetAvailableUnits();
+        int closestUnit = 0;
 
-        if (availableUnit != null && _unitRepository.UnitCount > 1)
+        if (availableUnits.Count > 0 && _unitRepository.UnitCount > 1)
         {
-            SpendWarehouseResources(_newBasePrice);
+            SpendWarehouseResources(_newBasePriceWood, _newBasePriceStone);
 
-            availableUnit.SetDestinationToBuildBase(_currentFlag.transform.position, NewBaseBuilt);
+            IUnitController unitToSend = availableUnits[closestUnit];
+
+            unitToSend.SetDestinationToBuildBase(_currentFlag.transform.position, BuiltNewBase);
         }
         else
         {
@@ -98,24 +103,24 @@ public class Base : MonoBehaviour
         }
     }
 
-    private void SpendWarehouseResources(int amount)
+    private void SpendWarehouseResources(int amountWood, int amountStone)
     {
         foreach (var storage in _resourceStorages)
         {
-            if (storage.Type == ResourceType.Wood && _resourcesKeeper.WoodCount >= amount)
+            if (storage.Type == ResourceType.Wood && _resourcesKeeper.WoodCount >= amountWood)
             {
-                storage.Activator.DeactivateLastObject(amount);
+                storage.Activator.DeactivateLastObject(amountWood);
                 continue;
             }
 
-            if (storage.Type == ResourceType.Stone && _resourcesKeeper.StoneCount >= amount)
+            if (storage.Type == ResourceType.Stone && _resourcesKeeper.StoneCount >= amountStone)
             {
-                storage.Activator.DeactivateLastObject(amount);
+                storage.Activator.DeactivateLastObject(amountStone);
                 continue;
             }
         }
 
-        _resourcesKeeper.Subtract(amount, amount);
+        _resourcesKeeper.Subtract(amountWood, amountStone);
     }
 
     public void ResetResourcesAndStorages()
@@ -128,7 +133,7 @@ public class Base : MonoBehaviour
         }
     }
 
-    private void NewBaseBuilt(IUnitController unit)
+    private void BuiltNewBase(IUnitController unit)
     {
         Base newBase = _baseFactory.Create(unit.Position, Quaternion.identity);
 
@@ -161,7 +166,7 @@ public class Base : MonoBehaviour
             return;
         }
 
-        SpendWarehouseResources(_unitPrice);
+        SpendWarehouseResources(_unitPriceWood, _unitPriceStone);
 
         _unitSpawner.Create(_spawnPositionNumber);
     }

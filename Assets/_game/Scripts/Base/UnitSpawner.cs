@@ -11,7 +11,7 @@ public class UnitSpawner : MonoBehaviour
 
     private UnitRepository _unitRepository;
 
-    [Inject] private GameObject _unit;
+    [Inject] private Unit _unitPrefab;
     [Inject] private DiContainer _container;
     [Inject] private float _unitSpeed;
 
@@ -30,15 +30,16 @@ public class UnitSpawner : MonoBehaviour
 
     public void Create(int index)
     {
-        GameObject unitObject = _container.InstantiatePrefab(_unit, _unitPositions[index].position, Quaternion.Euler(_unitRotation), null);
+        Unit unit = _container.InstantiatePrefabForComponent<Unit>(
+            _unitPrefab,
+            _unitPositions[index].position,
+            Quaternion.Euler(_unitRotation),
+            null);
 
-        if (unitObject.TryGetComponent(out Unit unit))
-        {
-            UnitMover unitMover = new UnitMover(unit, _unitSpeed, _base.transform.position);
+        UnitMover unitMover = new UnitMover(unit, _unitSpeed, _base.transform.position);
 
-            unit.Init(unitMover);
+        unit.Init(unitMover);
 
-            _unitRepository.RegisterUnit(unitMover);
-        }
+        _unitRepository.RegisterUnit(unitMover);
     }
 }

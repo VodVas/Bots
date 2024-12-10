@@ -6,8 +6,8 @@ public class RandomPositionProvider : IPositionProvider
     private readonly float _spawnHeight;
     private readonly float _offsetX;
     private readonly float _offsetZ;
-    private readonly int _maxAttempts;
     private readonly float _searchRadius;
+    private readonly int _maxAttempts;
     private readonly int _searchRadiusMultiplier = 1000;
 
     public RandomPositionProvider(Collider planeCollider, float spawnHeight, float offsetX, float offsetZ, int maxAttempts, float searchRadius)

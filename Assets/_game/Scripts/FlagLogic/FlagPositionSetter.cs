@@ -64,7 +64,10 @@ public class FlagPositionSetter : MonoBehaviour
         {
             GameObject flagObject = _container.InstantiatePrefab(_flagPrefab, position, Quaternion.identity, null);
 
-            _currentFlag = flagObject.GetComponent<Flag>();
+            if (flagObject.TryGetComponent(out Flag flag))
+            {
+                _currentFlag = flag;
+            }
         }
         else
         {

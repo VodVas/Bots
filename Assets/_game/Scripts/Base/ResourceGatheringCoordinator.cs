@@ -13,7 +13,7 @@ public class ResourceGatheringCoordinator : MonoBehaviour
     private UnitRepository _unitRepository;
     private ParticlePlayer _particlePlayer;
 
-    [Inject] private ResourceRegistrator _resourceManager;
+    [Inject] private ResourceRegistrator _resourceRegistrator;
 
     private void Awake()
     {
@@ -37,41 +37,59 @@ public class ResourceGatheringCoordinator : MonoBehaviour
         }
     }
 
-    private (IResourceble, Collider) Scan()
+    private List<(IResourceble, Collider)> Scan()
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, _scanRadius);
+
+        List<(IResourceble, Collider)> sortedResources = new List<(IResourceble, Collider)>();
 
         foreach (var collider in hitColliders)
         {
             if (collider.TryGetComponent(out IResourceble resource))
             {
-                if (_resourceManager.IsProcessed(resource))
+                if (_resourceRegistrator.IsProcessed(resource))
                 {
                     continue;
                 }
 
                 Remember(resource);
 
-                return (resource, collider);
+                sortedResources.Add((resource, collider));
             }
         }
 
-        return (null, null);
+        sortedResources.Sort((a, b) =>
+            Vector3.Distance(transform.position, a.Item2.transform.position)
+            .CompareTo(Vector3.Distance(transform.position, b.Item2.transform.position)));
+
+        return sortedResources;
     }
 
     private void ProcessResourceAssignment()
     {
-        var (resource, collider) = Scan();
+        var resources = Scan();
 
-        if (resource != null && collider != null)
+        if (resources.Count == 0) return;
+
+        var availableUnits = _unitRepository.GetAvailableUnits();
+        int unitIndex = 0;
+
+        foreach (var (resource, collider) in resources)
         {
-            AssignUnitToResource(resource, collider);
+            if (unitIndex >= availableUnits.Count)
+            {
+                break;
+            }
+
+            AssignUnitToResource(resource, collider, availableUnits[unitIndex]);
+
+            unitIndex++;
         }
     }
 
     private void Remember(IResourceble resource)
     {
-        _resourceManager.AddProcessed(resource);
+        _resourceRegistrator.AddProcessed(resource);
 
         if (resource is IDeathEvent deathEventResource)
         {
@@ -79,13 +97,11 @@ public class ResourceGatheringCoordinator : MonoBehaviour
         }
     }
 
-    private void AssignUnitToResource(IResourceble resource, Collider collider)
+    private void AssignUnitToResource(IResourceble resource, Collider collider, IUnitController unit)
     {
-        IUnitController availableUnit = _unitRepository.GetAvailableUnit();
-
-        if (availableUnit != null)
+        if (unit != null)
         {
-            availableUnit.SetDestinationToResource(collider.transform.position, resource);
+            unit.SetDestinationToResource(collider.transform.position, resource);
         }
     }
 
@@ -93,7 +109,7 @@ public class ResourceGatheringCoordinator : MonoBehaviour
     {
         if (resource is IResourceble resourceble)
         {
-            _resourceManager.RemoveProcessed(resourceble);
+            _resourceRegistrator.RemoveProcessed(resourceble);
 
             resource.Dead -= OnResourceDead;
         }

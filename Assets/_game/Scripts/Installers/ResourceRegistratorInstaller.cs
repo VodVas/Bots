@@ -1,7 +1,7 @@
 using UnityEngine;
 using Zenject;
 
-public class CommonResourceListInstaller : MonoInstaller
+public class ResourceRegistratorInstaller : MonoInstaller
 {
     [SerializeField] private ResourceRegistrator _resourceRegistrator;
 

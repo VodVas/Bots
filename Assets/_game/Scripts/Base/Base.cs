@@ -17,7 +17,6 @@ public class Base : MonoBehaviour
     private ResourcesKeeper _resourcesKeeper;
     private UnitSpawner _unitSpawner;
     private Flag _currentFlag;
-    private int _spawnPositionNumber = 0;
     private UnitRepository _unitRepository;
     [Inject] private IBaseFactory _baseFactory;
 
@@ -73,14 +72,20 @@ public class Base : MonoBehaviour
 
     private void OnResourceChange()
     {
-        if (_currentState == BaseState.WaitingForResources)
+        if (_currentState == BaseState.WaitingForResources && _unitRepository.UnitCount > 1)
         {
+
+
             if (_resourcesKeeper.WoodCount >= _newBasePriceWood && _resourcesKeeper.StoneCount >= _newBasePriceStone)
             {
                 _currentState = BaseState.SendingUnitToFlag;
 
                 SendUnitToFlag();
             }
+        }
+        else
+        {
+            _currentState = BaseState.BuildingUnits;
         }
     }
 
@@ -123,9 +128,9 @@ public class Base : MonoBehaviour
         _resourcesKeeper.Subtract(amountWood, amountStone);
     }
 
-    public void ResetResourcesAndStorages()
+    private void ResetResourcesAndStorages()
     {
-        _resourcesKeeper.Reset();
+        _resourcesKeeper.ResetCount();
 
         foreach (var storage in _resourceStorages)
         {
@@ -146,7 +151,10 @@ public class Base : MonoBehaviour
 
         newBase.ResetResourcesAndStorages();
 
-        Destroy(_currentFlag.gameObject);
+        if (_currentFlag != null)
+        {
+            Destroy(_currentFlag.gameObject);
+        }
 
         _currentFlag = null;
         _currentState = BaseState.BuildingUnits;
@@ -168,6 +176,6 @@ public class Base : MonoBehaviour
 
         SpendWarehouseResources(_unitPriceWood, _unitPriceStone);
 
-        _unitSpawner.Create(_spawnPositionNumber);
+        _unitSpawner.Create();
     }
 }

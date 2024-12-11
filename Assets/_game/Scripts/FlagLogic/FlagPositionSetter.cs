@@ -9,7 +9,7 @@ public class FlagPositionSetter : MonoBehaviour
 
     [SerializeField] private float _yOffset = 0.01f;
 
-    [Inject(Id = FlagPrefab)] private GameObject _flagPrefab;
+    [Inject(Id = FlagPrefab)] private Flag _flagPrefab;
     [Inject] private DiContainer _container;
 
     private Flag _currentFlag;
@@ -62,12 +62,7 @@ public class FlagPositionSetter : MonoBehaviour
     {
         if (_currentFlag == null)
         {
-            GameObject flagObject = _container.InstantiatePrefab(_flagPrefab, position, Quaternion.identity, null);
-
-            if (flagObject.TryGetComponent(out Flag flag))
-            {
-                _currentFlag = flag;
-            }
+            _currentFlag = _container.InstantiatePrefabForComponent<Flag>(_flagPrefab.gameObject, position, Quaternion.identity, null);
         }
         else
         {

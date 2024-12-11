@@ -45,7 +45,7 @@ public class ResourcesKeeper : MonoBehaviour
         ResourceChange?.Invoke();
     }
 
-    public void Reset()
+    public void ResetCount()
     {
         WoodCount = 0;
         StoneCount = 0;

@@ -16,7 +16,7 @@ public class BaseFactoryInstaller : MonoInstaller
     {
         Container.Bind<Base>()
             .FromInstance(_basePrefab)
-            .AsSingle();
+            .AsTransient();
 
         Container.Bind<float>().WithId(RotationX).FromInstance(_rotationX).AsTransient();
         Container.Bind<float>().WithId(RotationY).FromInstance(_rotationY).AsTransient();

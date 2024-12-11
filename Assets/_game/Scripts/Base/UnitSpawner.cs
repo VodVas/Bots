@@ -4,8 +4,6 @@ using Zenject;
 [RequireComponent(typeof(UnitRepository))]
 public class UnitSpawner : MonoBehaviour
 {
-    [SerializeField] private Transform[] _unitPositions;
-    [SerializeField] private Transform _base;
     [SerializeField] private Vector3 _unitRotation;
     [SerializeField] private int _unitsCount = 3;
 
@@ -22,21 +20,21 @@ public class UnitSpawner : MonoBehaviour
 
     private void OnEnable()
     {
-        for (int i = 0; i < _unitsCount && i < _unitPositions.Length; i++)
+        for (int i = 0; i < _unitsCount; i++)
         {
-            Create(i);
+            Create();
         }
     }
 
-    public void Create(int index)
+    public void Create()
     {
         Unit unit = _container.InstantiatePrefabForComponent<Unit>(
             _unitPrefab,
-            _unitPositions[index].position,
+            transform.position,
             Quaternion.Euler(_unitRotation),
             null);
 
-        UnitMover unitMover = new UnitMover(unit, _unitSpeed, _base.transform.position);
+        UnitMover unitMover = new UnitMover(unit, _unitSpeed, transform.position);
 
         unit.Init(unitMover);
 

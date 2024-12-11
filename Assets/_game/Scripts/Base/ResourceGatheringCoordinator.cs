@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Zenject;
 
 [RequireComponent(typeof(ParticlePlayer))]
 [RequireComponent(typeof(UnitRepository))]
@@ -12,8 +11,7 @@ public class ResourceGatheringCoordinator : MonoBehaviour
 
     private UnitRepository _unitRepository;
     private ParticlePlayer _particlePlayer;
-
-    [Inject] private ResourceRegistrator _resourceRegistrator;
+    private HashSet<IResourceble> _processedResources = new HashSet<IResourceble>();
 
     private void Awake()
     {
@@ -47,29 +45,37 @@ public class ResourceGatheringCoordinator : MonoBehaviour
         {
             if (collider.TryGetComponent(out IResourceble resource))
             {
-                if (_resourceRegistrator.IsProcessed(resource))
+                if (_processedResources.Contains(resource))
                 {
                     continue;
                 }
-
-                Remember(resource);
 
                 sortedResources.Add((resource, collider));
             }
         }
 
-        sortedResources.Sort((a, b) =>
+        sortedResources = SortResources(sortedResources);
+
+        return sortedResources;
+    }
+
+    private List<(IResourceble, Collider)> SortResources(List<(IResourceble, Collider)> resources)
+    {
+        resources.Sort((a, b) =>
             Vector3.Distance(transform.position, a.Item2.transform.position)
             .CompareTo(Vector3.Distance(transform.position, b.Item2.transform.position)));
 
-        return sortedResources;
+        return resources;
     }
 
     private void ProcessResourceAssignment()
     {
         var resources = Scan();
 
-        if (resources.Count == 0) return;
+        if (resources.Count == 0)
+        {
+            return;
+        }
 
         var availableUnits = _unitRepository.GetAvailableUnits();
         int unitIndex = 0;
@@ -89,7 +95,7 @@ public class ResourceGatheringCoordinator : MonoBehaviour
 
     private void Remember(IResourceble resource)
     {
-        _resourceRegistrator.AddProcessed(resource);
+        _processedResources.Add(resource);
 
         if (resource is IDeathEvent deathEventResource)
         {
@@ -102,6 +108,8 @@ public class ResourceGatheringCoordinator : MonoBehaviour
         if (unit != null)
         {
             unit.SetDestinationToResource(collider.transform.position, resource);
+
+            Remember(resource);
         }
     }
 
@@ -109,7 +117,7 @@ public class ResourceGatheringCoordinator : MonoBehaviour
     {
         if (resource is IResourceble resourceble)
         {
-            _resourceRegistrator.RemoveProcessed(resourceble);
+            _processedResources.Remove(resourceble);
 
             resource.Dead -= OnResourceDead;
         }

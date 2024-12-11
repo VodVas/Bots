@@ -50,19 +50,6 @@ public class UnitRepository : MonoBehaviour
         return availableUnits;
     }
 
-    public IUnitController GetAvailableUnit()
-    {
-        foreach (var unit in _units)
-        {
-            if (unit.IsAvailable)
-            {
-                return unit;
-            }
-        }
-
-        return null;
-    }
-
     private void UpdateMovers()
     {
         for (int i = _units.Count - 1; i >= 0; i--)

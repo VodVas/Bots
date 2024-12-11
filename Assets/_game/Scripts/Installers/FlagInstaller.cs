@@ -5,11 +5,11 @@ public class FlagInstaller : MonoInstaller
 {
     private const string FlagPrefab = "FlagPrefab";
 
-    [SerializeField] private GameObject _flagPrefab;
+    [SerializeField] private Flag _flagPrefab;
 
     public override void InstallBindings()
     {
-        Container.Bind<GameObject>()
+        Container.Bind<Flag>()
             .WithId(FlagPrefab)
             .FromInstance(_flagPrefab)
             .AsSingle();

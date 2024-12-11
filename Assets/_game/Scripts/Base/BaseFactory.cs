@@ -9,9 +9,6 @@ public class BaseFactory : IBaseFactory
 
     [Inject] private DiContainer _container;
     [Inject] private Base _basePrefab;
-    //[Inject] private float _rotationX;
-    //[Inject] private float _rotationY;
-    //[Inject] private float _rotationZ;
 
     [Inject(Id = RotationX)] private float _rotationX;
     [Inject(Id = RotationY)] private float _rotationY;

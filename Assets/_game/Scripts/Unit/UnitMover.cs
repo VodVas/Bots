@@ -1,17 +1,20 @@
 using System;
 using UnityEngine;
+using DG.Tweening;
 
 public class UnitMover : IUnitController
 {
-    private Unit _unit;
     private Vector3 _resourcePosition;
     private Vector3 _basePosition;
     private Vector3 _destination;
     private UnitState _currentState;
     private IResourceble _targetResource;
-    private float _unitSpeed;
-    private float _littleValue = 0.1f;
+    private Unit _unit;
     private Base _currentBase;
+    private Tweener _moveTweener;
+    private Tweener _rotateTweener;
+    private float _unitSpeed;
+    private float _rotationSpeed = 0.15f;
 
     private Action<IUnitController> _onBaseBuilt;
 
@@ -109,20 +112,35 @@ public class UnitMover : IUnitController
 
     private void TransitionToTarget(Vector3 targetPosition, UnitState nextState)
     {
-        _unit.transform.position = Vector3.MoveTowards(_unit.transform.position, targetPosition, Time.deltaTime * _unitSpeed);
-
-        Vector3 direction = targetPosition - _unit.transform.position;
-
-        if (direction != Vector3.zero)
+        if (_moveTweener == null || !_moveTweener.IsActive())
         {
-            Quaternion rotation = Quaternion.LookRotation(direction);
+            float distance = Vector3.Distance(_unit.transform.position, targetPosition);
+            float duration = distance / _unitSpeed;
 
-            _unit.transform.rotation = Quaternion.Slerp(_unit.transform.rotation, rotation, Time.deltaTime * _unitSpeed);
+            _moveTweener = _unit.transform.DOMove(targetPosition, duration)
+                .SetEase(Ease.Linear)
+                .OnComplete(() =>
+                {
+                    _currentState = nextState;
+                    _moveTweener = null;
+                });
         }
 
-        if (Vector3.Distance(_unit.transform.position, targetPosition) < _littleValue)
+        if (_rotateTweener == null || !_rotateTweener.IsActive())
         {
-            _currentState = nextState;
+            Vector3 direction = targetPosition - _unit.transform.position;
+
+            if (direction != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+                _rotateTweener = _unit.transform.DORotateQuaternion(targetRotation, _rotationSpeed)
+                    .SetEase(Ease.Linear)
+                    .OnComplete(() =>
+                    {
+                        _rotateTweener = null;
+                    });
+            }
         }
     }
 }

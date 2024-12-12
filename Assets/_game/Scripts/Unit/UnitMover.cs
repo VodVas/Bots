@@ -112,7 +112,7 @@ public class UnitMover : IUnitController
 
     private void TransitionToTarget(Vector3 targetPosition, UnitState nextState)
     {
-        if (_moveTweener == null || !_moveTweener.IsActive())
+        if (_moveTweener == null || _moveTweener.IsActive() == false)
         {
             float distance = Vector3.Distance(_unit.transform.position, targetPosition);
             float duration = distance / _unitSpeed;
@@ -126,7 +126,7 @@ public class UnitMover : IUnitController
                 });
         }
 
-        if (_rotateTweener == null || !_rotateTweener.IsActive())
+        if (_rotateTweener == null || _rotateTweener.IsActive()== false)
         {
             Vector3 direction = targetPosition - _unit.transform.position;
 
